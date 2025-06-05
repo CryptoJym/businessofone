@@ -1,0 +1,48 @@
+# Business of One Robots.txt
+# https://businessofone.ai
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+
+# Sitemaps
+Sitemap: https://businessofone.ai/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 1
+
+# Major search engines
+User-agent: Googlebot
+Allow: /
+Disallow: /api/
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Disallow: /api/
+Crawl-delay: 1
+
+User-agent: DuckDuckBot
+Allow: /
+Disallow: /api/
+Crawl-delay: 1
+
+# Block bad bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
