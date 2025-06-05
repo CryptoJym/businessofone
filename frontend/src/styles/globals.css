@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --primary: 65 105 225; /* #4169E1 */
+    --accent: 22 160 133; /* #16A085 */
+    --background: 255 255 255;
+    --foreground: 10 10 10;
+    --muted: 244 244 245;
+    --muted-foreground: 113 113 122;
+  }
+
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/80;
+  }
+}
+
+@layer utilities {
+  /* Text gradient utility */
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
+  }
+
+  /* Hover lift effect */
+  .hover-lift {
+    @apply transition-transform duration-300 hover:-translate-y-1;
+  }
+
+  /* Glass morphism effect */
+  .glass {
+    @apply backdrop-blur-md bg-white/10 border border-white/20;
+  }
+
+  /* Glow effect */
+  .glow {
+    box-shadow: 0 0 20px rgb(65 105 225 / 0.3);
+  }
+
+  /* Shimmer loading effect */
+  .shimmer {
+    @apply relative overflow-hidden;
+  }
+
+  .shimmer::after {
+    @apply absolute inset-0 -translate-x-full animate-shimmer;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    content: '';
+  }
+
+  /* Focus visible outline */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
+  }
+}
