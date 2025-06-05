@@ -1,0 +1,54 @@
+{{#extend "base"}}
+{{#content "content"}}
+    <h1>Your Strategy Session is Confirmed! 🎯</h1>
+    
+    <p>Hi {{name}},</p>
+    
+    <p>Great news! Your free Business Strategy Session has been successfully scheduled. I'm excited to help you transform your solo business without the need to hire.</p>
+
+    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <h2 style="color: #4169E1; font-size: 18px; margin-top: 0;">Session Details:</h2>
+        <p style="margin: 10px 0;"><strong>Date:</strong> {{consultationDate}}</p>
+        <p style="margin: 10px 0;"><strong>Time:</strong> {{consultationTime}} {{timezone}}</p>
+        <p style="margin: 10px 0;"><strong>Duration:</strong> 45 minutes</p>
+        <p style="margin: 10px 0;"><strong>Format:</strong> {{consultationFormat}}</p>
+        {{#if meetingLink}}
+        <p style="margin: 10px 0;"><strong>Meeting Link:</strong> <a href="{{meetingLink}}" style="color: #4169E1;">Join Session</a></p>
+        {{/if}}
+    </div>
+
+    <h2 style="color: #333333; font-size: 20px;">What We'll Cover:</h2>
+    <ul style="color: #555555; line-height: 1.8;">
+        <li>A comprehensive audit of your current business operations</li>
+        <li>Identification of your biggest growth bottlenecks</li>
+        <li>Customized strategies to scale without hiring</li>
+        <li>Quick wins you can implement immediately</li>
+        <li>A clear roadmap for your next 90 days</li>
+    </ul>
+
+    <h2 style="color: #333333; font-size: 20px;">Before Our Call:</h2>
+    <p>To make the most of our time together, please:</p>
+    <ol style="color: #555555; line-height: 1.8;">
+        <li>Complete the <a href="{{preCallFormUrl}}" style="color: #4169E1;">pre-call assessment form</a> (takes 5 minutes)</li>
+        <li>Think about your top 3 business challenges</li>
+        <li>Have any relevant metrics or numbers handy</li>
+    </ol>
+
+    <div style="text-align: center; margin: 30px 0;">
+        <a href="{{calendarLink}}" class="button">Add to Calendar</a>
+    </div>
+
+    <p>If you need to reschedule, please use <a href="{{rescheduleLink}}" style="color: #4169E1;">this link</a> or reply to this email at least 24 hours before our scheduled time.</p>
+
+    <p>Looking forward to helping you build a world-class solo business!</p>
+
+    <p>Best regards,<br>
+    {{consultantName}}<br>
+    Business Transformation Specialist<br>
+    Business of One</p>
+
+    <div style="background-color: #FFF4E6; padding: 20px; border-radius: 8px; margin-top: 30px;">
+        <p style="margin: 0; font-size: 14px;"><strong>P.S.</strong> While you wait, check out our <a href="{{resourceUrl}}" style="color: #4169E1;">Solo Business Growth Toolkit</a> – it's packed with templates and strategies our most successful clients use.</p>
+    </div>
+{{/content}}
+{{/extend}}

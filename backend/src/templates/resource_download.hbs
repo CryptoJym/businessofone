@@ -1,0 +1,45 @@
+{{#extend "base"}}
+{{#content "content"}}
+    <h1>Your Download is Ready! 📥</h1>
+    
+    <p>Hi {{name}},</p>
+    
+    <p>Thank you for your interest in {{resourceName}}. Your download is ready and waiting for you!</p>
+
+    <div style="text-align: center; margin: 30px 0;">
+        <a href="{{downloadUrl}}" class="button">Download {{resourceName}}</a>
+    </div>
+
+    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <h3 style="color: #333333; font-size: 16px; margin-top: 0;">💡 Pro Tip:</h3>
+        <p style="margin: 10px 0;">This resource is most effective when implemented systematically. Take it one section at a time, and you'll see results within days.</p>
+    </div>
+
+    <h2 style="color: #333333; font-size: 20px;">What's Next?</h2>
+    
+    <p>Now that you have {{resourceName}}, here are three ways to maximize its value:</p>
+    
+    <ol style="color: #555555; line-height: 1.8;">
+        <li><strong>Review thoroughly:</strong> Set aside 30 minutes to go through the entire resource</li>
+        <li><strong>Implement immediately:</strong> Choose one strategy and apply it this week</li>
+        <li><strong>Track your results:</strong> Monitor the impact on your business metrics</li>
+    </ol>
+
+    <div style="background-color: #EBF4FF; padding: 25px; border-radius: 8px; margin: 30px 0; border-left: 4px solid #4169E1;">
+        <h3 style="color: #4169E1; font-size: 18px; margin-top: 0;">Ready for Personalized Guidance?</h3>
+        <p style="margin: 15px 0;">While this resource provides a solid foundation, every business is unique. If you'd like help creating a customized implementation plan for YOUR specific situation, I'm here to help.</p>
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="{{consultationUrl}}" class="button button-secondary">Book Your Free Strategy Session</a>
+        </div>
+    </div>
+
+    <p>Have questions about the resource? Just hit reply – I personally read and respond to every email.</p>
+
+    <p>To your success,<br>
+    The Business of One Team</p>
+
+    <div style="background-color: #FFF4E6; padding: 20px; border-radius: 8px; margin-top: 30px;">
+        <p style="margin: 0; font-size: 14px;"><strong>P.S.</strong> If the download link doesn't work, you can also access your resource here: <a href="{{downloadUrl}}" style="color: #4169E1;">{{downloadUrl}}</a></p>
+    </div>
+{{/content}}
+{{/extend}}
