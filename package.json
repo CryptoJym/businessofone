@@ -6,15 +6,27 @@
     "orchestrate": "node scripts/agent-orchestrator.js",
     "background": "echo \"Background agent started with prompt:\" && echo $CURSOR_BACKGROUND_AGENT_PROMPT",
     "dev": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:all": "concurrently \"npm run dev:backend\" \"npm run dev\"",
     "build": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "build:all": "npm run build:backend && npm run build",
     "test": "jest",
-    "lint": "eslint . --ext .ts,.tsx,.js,.jsx"
+    "test:backend": "cd backend && npm test",
+    "test:all": "npm test && npm run test:backend",
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install"
   },
   "keywords": [
     "business",
     "of",
-    "one"
+    "one",
+    "crm",
+    "hubspot"
   ],
   "author": "Utlyze",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  }
 }
