@@ -2,11 +2,17 @@
   "name": "businessofone",
   "version": "1.0.0",
   "description": "Solo business consulting and optimization",
+  "main": "api/dist/index.js",
   "scripts": {
     "orchestrate": "node scripts/agent-orchestrator.js",
     "background": "echo \"Background agent started with prompt:\" && echo $CURSOR_BACKGROUND_AGENT_PROMPT",
-    "dev": "cd frontend && npm run dev",
-    "build": "cd frontend && npm run build",
+    "dev": "concurrently \"npm run dev:api\" \"npm run dev:frontend\"",
+    "dev:api": "cd api && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build": "npm run build:api && npm run build:frontend",
+    "build:api": "cd api && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "start": "cd api && npm start",
     "test": "jest",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx"
   },
@@ -16,5 +22,8 @@
     "one"
   ],
   "author": "Utlyze",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
 }
