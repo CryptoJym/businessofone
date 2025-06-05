@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary: 65 105 225; /* #4169E1 */
+    --color-accent: 22 160 133; /* #16A085 */
+    --color-background: 255 255 255; /* #FFFFFF */
+    --color-foreground: 23 23 23; /* #171717 */
+    --color-muted: 245 245 245; /* #F5F5F5 */
+    --color-border: 229 229 229; /* #E5E5E5 */
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .text-primary {
+    color: rgb(var(--color-primary));
+  }
+  
+  .bg-primary {
+    background-color: rgb(var(--color-primary));
+  }
+  
+  .border-primary {
+    border-color: rgb(var(--color-primary));
+  }
+  
+  .text-accent {
+    color: rgb(var(--color-accent));
+  }
+  
+  .bg-accent {
+    background-color: rgb(var(--color-accent));
+  }
+}
