@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: 222.2 84% 4.9%;
+      --foreground: 210 40% 98%;
+    }
+  }
+}
+
+@layer utilities {
+  /* Custom utility classes for brand colors */
+  .text-primary-100 {
+    color: #c1d1ff;
+  }
+  
+  .bg-primary-600 {
+    background-color: #2d50c7;
+  }
+  
+  .hover\:bg-primary-600:hover {
+    background-color: #2d50c7;
+  }
+}
