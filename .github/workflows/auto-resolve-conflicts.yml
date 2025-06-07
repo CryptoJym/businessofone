@@ -1,0 +1,65 @@
+name: Auto-Resolve Merge Conflicts
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+jobs:
+  detect-conflicts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Check for merge conflicts
+        id: conflicts
+        run: |
+          git fetch origin ${{ github.base_ref }}
+          if git merge --no-commit origin/${{ github.base_ref }} 2>&1 | grep -q "CONFLICT"; then
+            echo "has_conflicts=true" >> $GITHUB_OUTPUT
+            git merge --abort
+          else
+            echo "has_conflicts=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Create Copilot issue for conflicts
+        if: steps.conflicts.outputs.has_conflicts == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `[Copilot] Resolve merge conflicts in PR #${{ github.event.pull_request.number }}`,
+              body: `@copilot Please resolve the merge conflicts in PR #${{ github.event.pull_request.number }}
+              
+              ### Context
+              - PR Title: ${{ github.event.pull_request.title }}
+              - Source Branch: ${{ github.event.pull_request.head.ref }}
+              - Target Branch: ${{ github.event.pull_request.base.ref }}
+              
+              ### Instructions
+              1. Analyze the conflicting changes
+              2. Apply intelligent merge strategies based on file types
+              3. Preserve functionality from both branches
+              4. Update tests if needed
+              
+              ### Merge Strategy Guidelines
+              - **Config files**: Merge all unique entries
+              - **Code files**: Preserve all functionality, refactor if needed
+              - **Documentation**: Combine information from both versions
+              - **Lock files**: Regenerate after resolving other conflicts
+              
+              Please resolve these conflicts and push the changes back to the PR.`,
+              labels: ['copilot', 'merge-conflict', 'automated'],
+              assignees: ['copilot']
+            });
+            
+            // Comment on the PR
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ github.event.pull_request.number }},
+              body: `🤖 Merge conflicts detected! I've created issue #${issue.data.number} for Copilot to resolve them automatically.`
+            });
