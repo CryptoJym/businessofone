@@ -1,0 +1,505 @@
+{
+  "exportFormatVersion": 2,
+  "exportTime": "2024-01-01 00:00:00",
+  "containerVersion": {
+    "path": "accounts/XXXXXXXXXX/containers/XXXXXXXX/versions/1",
+    "accountId": "XXXXXXXXXX",
+    "containerId": "XXXXXXXX",
+    "containerVersionId": "1",
+    "name": "Business of One - Analytics Setup",
+    "description": "Pre-configured analytics setup for Business of One landing page",
+    "container": {
+      "path": "accounts/XXXXXXXXXX/containers/XXXXXXXX",
+      "accountId": "XXXXXXXXXX", 
+      "containerId": "XXXXXXXX",
+      "name": "Business of One",
+      "publicId": "GTM-XXXXXXX",
+      "usageContext": ["WEB"],
+      "fingerprint": "0000000000000000000",
+      "tagManagerUrl": "https://tagmanager.google.com/#/container/accounts/XXXXXXXXXX/containers/XXXXXXXX/workspaces?apiLink=container"
+    },
+    "tag": [
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "tagId": "1",
+        "name": "GA4 Configuration",
+        "type": "gaawc",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "measurementId",
+            "value": "{{GA4 Measurement ID}}"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "sendPageView",
+            "value": "true"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "debug_mode"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{Debug Mode}}"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "fingerprint": "0000000000000000000",
+        "firingTriggerId": ["2345"],
+        "tagFiringOption": "ONCE_PER_EVENT"
+      },
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "tagId": "2",
+        "name": "Facebook Pixel Base Code",
+        "type": "html",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "html",
+            "value": "<!-- Facebook Pixel Code -->\n<script>\n!function(f,b,e,v,n,t,s)\n{if(f.fbq)return;n=f.fbq=function(){n.callMethod?\nn.callMethod.apply(n,arguments):n.queue.push(arguments)};\nif(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';\nn.queue=[];t=b.createElement(e);t.async=!0;\nt.src=v;s=b.getElementsByTagName(e)[0];\ns.parentNode.insertBefore(t,s)}(window,document,'script',\n'https://connect.facebook.net/en_US/fbevents.js');\nfbq('init', '{{Facebook Pixel ID}}');\nfbq('track', 'PageView');\n</script>\n<!-- End Facebook Pixel Code -->"
+          }
+        ],
+        "fingerprint": "0000000000000000000",
+        "firingTriggerId": ["2345"],
+        "tagFiringOption": "ONCE_PER_EVENT"
+      },
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "tagId": "3",
+        "name": "Microsoft Clarity",
+        "type": "html",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "html",
+            "value": "<script type=\"text/javascript\">\n(function(c,l,a,r,i,t,y){\nc[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};\nt=l.createElement(r);t.async=1;t.src=\"https://www.clarity.ms/tag/\"+i;\ny=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);\n})(window,document,\"clarity\",\"script\",\"{{Clarity Project ID}}\");\n</script>"
+          }
+        ],
+        "fingerprint": "0000000000000000000",
+        "firingTriggerId": ["2345"],
+        "tagFiringOption": "ONCE_PER_EVENT"
+      },
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "tagId": "4",
+        "name": "Strategy Session Form Start",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "strategy_session_form_start"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementId",
+            "value": "{{GA4 Measurement ID}}"
+          }
+        ],
+        "fingerprint": "0000000000000000000",
+        "firingTriggerId": ["10"],
+        "tagFiringOption": "ONCE_PER_EVENT"
+      },
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX", 
+        "tagId": "5",
+        "name": "Strategy Session Form Submit",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "eventName", 
+            "value": "strategy_session_form_submit"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementId",
+            "value": "{{GA4 Measurement ID}}"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventParameters",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "name",
+                    "value": "value"
+                  },
+                  {
+                    "type": "TEMPLATE", 
+                    "key": "value",
+                    "value": "150"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "name",
+                    "value": "currency"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "value", 
+                    "value": "USD"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "fingerprint": "0000000000000000000",
+        "firingTriggerId": ["11"],
+        "tagFiringOption": "ONCE_PER_EVENT"
+      },
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "tagId": "6",
+        "name": "Facebook Lead Event",
+        "type": "html",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "html",
+            "value": "<script>\nfbq('track', 'Lead', {\n  value: 150,\n  currency: 'USD'\n});\n</script>"
+          }
+        ],
+        "fingerprint": "0000000000000000000",
+        "firingTriggerId": ["11"],
+        "tagFiringOption": "ONCE_PER_EVENT"
+      },
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "tagId": "7",
+        "name": "Scroll Depth Tracking",
+        "type": "gaawe",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "scroll"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "measurementId",
+            "value": "{{GA4 Measurement ID}}"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventParameters",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "name",
+                    "value": "percent_scrolled"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "value",
+                    "value": "{{Scroll Depth Threshold}}"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "fingerprint": "0000000000000000000",
+        "firingTriggerId": ["12"],
+        "tagFiringOption": "ONCE_PER_EVENT"
+      }
+    ],
+    "trigger": [
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "triggerId": "2345",
+        "name": "All Pages",
+        "type": "PAGEVIEW",
+        "fingerprint": "0000000000000000000"
+      },
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "triggerId": "10",
+        "name": "Form Interaction - Strategy Session Start",
+        "type": "FORM_SUBMISSION",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{Form ID}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "strategy-session-form"
+              }
+            ]
+          }
+        ],
+        "fingerprint": "0000000000000000000"
+      },
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "triggerId": "11",
+        "name": "Form Submit - Strategy Session",
+        "type": "FORM_SUBMISSION",
+        "filter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{Form ID}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "strategy-session-form"
+              }
+            ]
+          }
+        ],
+        "fingerprint": "0000000000000000000"
+      },
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "triggerId": "12",
+        "name": "Scroll Depth",
+        "type": "SCROLL_DEPTH",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "verticalThresholdsPercent",
+            "value": "25,50,75,90,100"
+          }
+        ],
+        "fingerprint": "0000000000000000000"
+      }
+    ],
+    "variable": [
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "variableId": "1",
+        "name": "GA4 Measurement ID",
+        "type": "c",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "value",
+            "value": "G-XXXXXXXXXX"
+          }
+        ],
+        "fingerprint": "0000000000000000000"
+      },
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "variableId": "2",
+        "name": "Facebook Pixel ID",
+        "type": "c",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "value",
+            "value": "XXXXXXXXXXXXXXX"
+          }
+        ],
+        "fingerprint": "0000000000000000000"
+      },
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "variableId": "3",
+        "name": "Clarity Project ID",
+        "type": "c",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "value",
+            "value": "XXXXXXXXXX"
+          }
+        ],
+        "fingerprint": "0000000000000000000"
+      },
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "variableId": "4",
+        "name": "Debug Mode",
+        "type": "jsm",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "javascript",
+            "value": "function() {\n  return window.location.hostname === 'localhost' || window.location.hostname.includes('staging');\n}"
+          }
+        ],
+        "fingerprint": "0000000000000000000"
+      },
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "variableId": "5",
+        "name": "Form ID",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "gtm.elementId"
+          }
+        ],
+        "fingerprint": "0000000000000000000"
+      }
+    ],
+    "builtInVariable": [
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "type": "PAGE_URL",
+        "name": "Page URL"
+      },
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "type": "PAGE_HOSTNAME",
+        "name": "Page Hostname"
+      },
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "type": "PAGE_PATH",
+        "name": "Page Path"
+      },
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "type": "REFERRER",
+        "name": "Referrer"
+      },
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "type": "CLICK_ELEMENT",
+        "name": "Click Element"
+      },
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "type": "CLICK_CLASSES",
+        "name": "Click Classes"
+      },
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "type": "CLICK_ID",
+        "name": "Click ID"
+      },
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "type": "CLICK_TARGET",
+        "name": "Click Target"
+      },
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "type": "CLICK_URL",
+        "name": "Click URL"
+      },
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "type": "CLICK_TEXT",
+        "name": "Click Text"
+      },
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "type": "FORM_ELEMENT",
+        "name": "Form Element"
+      },
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "type": "FORM_CLASSES",
+        "name": "Form Classes"
+      },
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "type": "FORM_ID",
+        "name": "Form ID"
+      },
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "type": "FORM_TARGET",
+        "name": "Form Target"
+      },
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "type": "FORM_URL",
+        "name": "Form URL"
+      },
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "type": "FORM_TEXT",
+        "name": "Form Text"
+      },
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "type": "SCROLL_DEPTH_THRESHOLD",
+        "name": "Scroll Depth Threshold"
+      },
+      {
+        "accountId": "XXXXXXXXXX",
+        "containerId": "XXXXXXXX",
+        "type": "SCROLL_DEPTH_PERCENTAGE",
+        "name": "Scroll Depth Percentage"
+      }
+    ],
+    "fingerprint": "0000000000000000000",
+    "tagManagerUrl": "https://tagmanager.google.com/#/versions/accounts/XXXXXXXXXX/containers/XXXXXXXX/versions/1?apiLink=version"
+  }
+}

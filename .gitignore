@@ -6,6 +6,10 @@ node_modules/
 # Testing
 coverage/
 .nyc_output/
+junit.xml
+test-report.xml
+*.lcov
+.jest-cache/
 
 # Next.js
 .next/
@@ -73,3 +77,4 @@ out/
 test-results/
 playwright-report/
 playwright/.cache/
+__snapshots__/
