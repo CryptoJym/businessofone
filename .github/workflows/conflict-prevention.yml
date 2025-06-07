@@ -1,0 +1,69 @@
+name: Conflict Prevention
+
+on:
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  check-conflicts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for potential conflicts
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            
+            // Get PR files
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number
+            });
+            
+            // Check other open PRs
+            const { data: openPRs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open'
+            });
+            
+            const conflicts = [];
+            for (const otherPR of openPRs) {
+              if (otherPR.number === pr.number) continue;
+              
+              const { data: otherFiles } = await github.rest.pulls.listFiles({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: otherPR.number
+              });
+              
+              const overlapping = files.filter(f => 
+                otherFiles.some(of => of.filename === f.filename)
+              );
+              
+              if (overlapping.length > 0) {
+                conflicts.push({
+                  pr: otherPR.number,
+                  files: overlapping.map(f => f.filename)
+                });
+              }
+            }
+            
+            if (conflicts.length > 0) {
+              const body = `⚠️ **Potential Conflicts Detected**\n\n` +
+                conflicts.map(c => 
+                  `- PR #${c.pr} modifies: ${c.files.join(', ')}`
+                ).join('\n') +
+                `\n\nConsider:\n` +
+                `1. Coordinating with other PR authors\n` +
+                `2. Rebasing after other PRs merge\n` +
+                `3. Using smaller, focused changes`;
+                
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body
+              });
+            }

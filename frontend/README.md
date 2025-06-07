@@ -107,6 +107,18 @@ const primaryColor = designTokens.colors.primary[500];
 </Card>
 ```
 
+<<<<<<< HEAD
+=======
+## 📋 Pages
+
+- `/` - Home page with hero section and primary CTA
+- `/about` - About page with company story, mission, and values
+- `/services` - Services page with pricing information
+- `/case-studies` - Case studies showcase
+- `/forms` - Form examples and lead capture
+- `/design-system` - Design system demo
+
+>>>>>>> origin/main
 ## 🔧 Configuration
 
 - **Tailwind Config**: Customized with design tokens
@@ -118,6 +130,22 @@ const primaryColor = designTokens.colors.primary[500];
 - [Design System Guide](./docs/DESIGN_SYSTEM.md)
 - [Design System Summary](./DESIGN_SYSTEM_SUMMARY.md)
 
+<<<<<<< HEAD
+=======
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+>>>>>>> origin/main
 ## 🚧 Next Steps
 
 1. Install dependencies and start the development server

@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 const { designTokens } = require('./lib/design-tokens');
 
+=======
+>>>>>>> origin/main
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -53,6 +56,11 @@ module.exports = {
         warning: '#f59e0b',
         error: '#ef4444',
         info: '#3b82f6',
+<<<<<<< HEAD
+=======
+        'utlyze-blue': '#4169E1',
+        'accent-green': '#16A085',
+>>>>>>> origin/main
       },
       fontFamily: {
         sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],

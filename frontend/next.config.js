@@ -5,9 +5,12 @@ const nextConfig = {
   images: {
     domains: ['localhost'],
   },
+<<<<<<< HEAD
   experimental: {
     appDir: true,
   },
+=======
+>>>>>>> origin/main
 }
 
 module.exports = nextConfig
