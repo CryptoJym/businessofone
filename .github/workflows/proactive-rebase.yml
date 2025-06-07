@@ -1,0 +1,207 @@
+name: Proactive Rebase & Conflict Prevention
+
+on:
+  schedule:
+    # Run every 6 hours
+    - cron: '0 */6 * * *'
+  
+  workflow_dispatch:
+    inputs:
+      pr_limit:
+        description: 'Maximum number of PRs to process'
+        required: false
+        default: '10'
+        type: string
+      dry_run:
+        description: 'Dry run (no actual rebasing)'
+        required: false
+        default: 'false'
+        type: boolean
+
+jobs:
+  prevent-conflicts:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Find PRs that need rebasing
+        id: find_prs
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr_limit = parseInt('${{ inputs.pr_limit }}' || '10');
+            const dry_run = '${{ inputs.dry_run }}' === 'true';
+            
+            console.log(`Processing up to ${pr_limit} PRs (dry_run: ${dry_run})`);
+            
+            // Get all open PRs
+            const prs = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              sort: 'updated',
+              direction: 'asc',
+              per_page: pr_limit
+            });
+            
+            const prs_to_rebase = [];
+            const conflicting_prs = [];
+            
+            for (const pr of prs.data) {
+              // Skip draft PRs
+              if (pr.draft) continue;
+              
+              // Get detailed PR info
+              const detailed_pr = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number
+              });
+              
+              console.log(`PR #${pr.number}: mergeable_state = ${detailed_pr.data.mergeable_state}`);
+              
+              if (detailed_pr.data.mergeable_state === 'behind') {
+                prs_to_rebase.push({
+                  number: pr.number,
+                  title: pr.title,
+                  author: pr.user.login,
+                  head_ref: pr.head.ref,
+                  base_ref: pr.base.ref,
+                  updated_at: pr.updated_at
+                });
+              } else if (detailed_pr.data.mergeable_state === 'conflicting') {
+                conflicting_prs.push({
+                  number: pr.number,
+                  title: pr.title,
+                  author: pr.user.login
+                });
+              }
+            }
+            
+            core.setOutput('prs_to_rebase', JSON.stringify(prs_to_rebase));
+            core.setOutput('conflicting_prs', JSON.stringify(conflicting_prs));
+            core.setOutput('rebase_count', prs_to_rebase.length);
+            core.setOutput('conflict_count', conflicting_prs.length);
+            
+            return { prs_to_rebase, conflicting_prs };
+      
+      - name: Create rebase tasks for Copilot
+        if: steps.find_prs.outputs.rebase_count > 0
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const dry_run = '${{ inputs.dry_run }}' === 'true';
+            const prs_to_rebase = JSON.parse('${{ steps.find_prs.outputs.prs_to_rebase }}');
+            
+            if (dry_run) {
+              console.log('DRY RUN - Would create rebase tasks for:');
+              prs_to_rebase.forEach(pr => {
+                console.log(`- PR #${pr.number}: ${pr.title}`);
+              });
+              return;
+            }
+            
+            // Create a batch issue for Copilot
+            const issue_body = prs_to_rebase.map(pr => {
+              const days_old = Math.floor((Date.now() - new Date(pr.updated_at)) / (1000 * 60 * 60 * 24));
+              
+              return `### PR #${pr.number}: ${pr.title}
+              - Author: @${pr.author}
+              - Branch: \`${pr.head_ref}\` → \`${pr.base_ref}\`
+              - Last updated: ${days_old} days ago
+              - Action: Rebase onto latest \`${pr.base_ref}\``;
+            }).join('\n\n');
+            
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `[Proactive] Rebase ${prs_to_rebase.length} PRs to prevent conflicts`,
+              body: `@copilot Please rebase the following PRs onto their respective target branches to prevent merge conflicts:
+              
+              ${issue_body}
+              
+              **Instructions for each PR:**
+              1. Checkout the PR branch
+              2. Rebase onto the latest target branch
+              3. Force push the rebased branch
+              4. Comment on the PR that it has been rebased
+              5. If rebase fails due to conflicts, create a separate issue for conflict resolution
+              
+              **Important:**
+              - Preserve all commits (no squashing during rebase)
+              - Maintain commit authorship
+              - Run tests after each rebase
+              - Skip if PR has "do not rebase" label
+              
+              This is a proactive measure to prevent conflicts before they occur.`,
+              assignees: ['copilot'],
+              labels: ['proactive-rebase', 'copilot-task', 'automation']
+            });
+            
+            console.log(`Created issue #${issue.data.number} for proactive rebasing`);
+            
+            // Comment on each PR
+            for (const pr of prs_to_rebase) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: `🔄 **Proactive Rebase Scheduled**
+                
+                This PR is behind the target branch and will be automatically rebased to prevent potential conflicts.
+                
+                Tracking in issue #${issue.data.number}
+                
+                If you don't want automatic rebasing, please add the \`do-not-rebase\` label to this PR.`
+              });
+            }
+      
+      - name: Report conflicting PRs
+        if: steps.find_prs.outputs.conflict_count > 0
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const conflicting_prs = JSON.parse('${{ steps.find_prs.outputs.conflicting_prs }}');
+            
+            console.log(`Found ${conflicting_prs.length} PRs with existing conflicts:`);
+            conflicting_prs.forEach(pr => {
+              console.log(`- PR #${pr.number}: ${pr.title} by @${pr.author}`);
+            });
+            
+            // These should already have conflict resolution issues from the other workflow
+            // Just log them here for monitoring
+      
+      - name: Summary report
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const rebase_count = parseInt('${{ steps.find_prs.outputs.rebase_count }}');
+            const conflict_count = parseInt('${{ steps.find_prs.outputs.conflict_count }}');
+            const dry_run = '${{ inputs.dry_run }}' === 'true';
+            
+            const summary = `## Proactive Rebase Summary
+            
+            ${dry_run ? '**DRY RUN MODE**' : ''}
+            
+            - PRs needing rebase: ${rebase_count}
+            - PRs with conflicts: ${conflict_count}
+            - Total PRs checked: ${{ inputs.pr_limit || '10' }}
+            
+            ${rebase_count > 0 ? `✅ Created rebase tasks for ${rebase_count} PRs` : '✨ All PRs are up to date!'}
+            ${conflict_count > 0 ? `⚠️ ${conflict_count} PRs have existing conflicts (handled by conflict resolution workflow)` : ''}
+            
+            Next run: ${new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString()}`;
+            
+            // Create summary in workflow
+            await core.summary
+              .addHeading('Proactive Rebase Results')
+              .addRaw(summary)
+              .write();

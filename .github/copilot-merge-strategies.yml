@@ -1,0 +1,214 @@
+# Copilot Merge Conflict Resolution Strategies
+# This file defines how Copilot should handle conflicts in specific files
+
+version: 1
+
+# Global settings
+global:
+  test_command: "npm test"
+  lint_command: "npm run lint"
+  build_command: "npm run build"
+  
+  # Default strategy for all files
+  default_strategy:
+    approach: "preserve_functionality"
+    priority: "both_branches"
+    test_after_merge: true
+
+# File-specific strategies
+file_strategies:
+  # Lock files - regenerate
+  - pattern: "package-lock.json"
+    strategy: "regenerate"
+    instructions: |
+      1. Take package.json from the merge result
+      2. Delete package-lock.json
+      3. Run 'npm install' to regenerate
+      4. Stage the new package-lock.json
+    
+  - pattern: "yarn.lock"
+    strategy: "regenerate"
+    instructions: |
+      1. Take package.json from the merge result
+      2. Delete yarn.lock
+      3. Run 'yarn install' to regenerate
+      4. Stage the new yarn.lock
+  
+  # Configuration files - merge both
+  - pattern: ".gitignore"
+    strategy: "union"
+    instructions: |
+      1. Combine all unique entries from both branches
+      2. Remove duplicates
+      3. Sort alphabetically within sections
+      4. Preserve comments and section headers
+  
+  - pattern: "**/*.config.js"
+    strategy: "merge_objects"
+    instructions: |
+      1. For object properties, keep from both branches
+      2. If same key has different values, prefer target branch
+      3. Preserve all comments
+      4. Validate syntax after merge
+  
+  - pattern: "**/tsconfig.json"
+    strategy: "merge_objects"
+    instructions: |
+      1. Merge compiler options from both branches
+      2. Union of 'include' and 'exclude' arrays
+      3. Preserve all path mappings
+      4. Ensure valid TypeScript configuration
+  
+  # Test files - keep both
+  - pattern: "**/*.test.{js,ts,jsx,tsx}"
+    strategy: "keep_both"
+    instructions: |
+      1. Keep test cases from both branches
+      2. Resolve any naming conflicts
+      3. Update imports if needed
+      4. Ensure all tests pass
+  
+  - pattern: "**/*.spec.{js,ts,jsx,tsx}"
+    strategy: "keep_both"
+    instructions: |
+      1. Preserve all test suites
+      2. Merge describe blocks intelligently
+      3. Fix any duplicate test names
+      4. Verify test coverage maintained
+  
+  # Documentation - combine
+  - pattern: "**/*.md"
+    strategy: "combine"
+    instructions: |
+      1. Merge content sections intelligently
+      2. Keep additions from both branches
+      3. Resolve any contradictions favoring accuracy
+      4. Update table of contents if present
+      5. Fix any broken links
+  
+  - pattern: "README.md"
+    strategy: "combine"
+    priority: "careful"
+    instructions: |
+      1. Preserve all sections from both branches
+      2. Merge installation/setup instructions carefully
+      3. Combine features lists
+      4. Update badges and links
+      5. Ensure consistency throughout
+  
+  # Source code - careful merge
+  - pattern: "**/*.{js,jsx,ts,tsx}"
+    strategy: "semantic_merge"
+    instructions: |
+      1. Understand the changes from both branches
+      2. Preserve all functionality
+      3. Resolve import conflicts
+      4. Fix any TypeScript errors
+      5. Maintain code style consistency
+      6. Add comments for non-obvious resolutions
+  
+  # Style files
+  - pattern: "**/*.{css,scss,less}"
+    strategy: "combine_rules"
+    instructions: |
+      1. Merge style rules from both branches
+      2. Resolve specificity conflicts
+      3. Preserve media queries
+      4. Check for visual regressions
+  
+  - pattern: "**/tailwind.config.{js,ts}"
+    strategy: "merge_deep"
+    instructions: |
+      1. Deep merge theme extensions
+      2. Combine all color definitions
+      3. Merge plugin arrays
+      4. Preserve all custom utilities
+
+# Complex resolution patterns
+complex_patterns:
+  # API route conflicts
+  - pattern: "**/api/**/*.{js,ts}"
+    detection: "route_conflict"
+    instructions: |
+      1. Check if both branches add same endpoint
+      2. Merge endpoint functionality if possible
+      3. Otherwise, create versioned endpoints
+      4. Update API documentation
+  
+  # Database migrations
+  - pattern: "**/migrations/*.sql"
+    detection: "migration_conflict"
+    instructions: |
+      1. Check migration order dependencies
+      2. Reorder if necessary
+      3. Ensure schema consistency
+      4. Test rollback functionality
+  
+  # Component conflicts
+  - pattern: "**/components/**/*.{jsx,tsx}"
+    detection: "component_conflict"
+    instructions: |
+      1. Merge prop interfaces
+      2. Combine component logic
+      3. Preserve all event handlers
+      4. Update tests for merged component
+
+# Validation rules
+validation:
+  - name: "No console.log in production"
+    pattern: "**/*.{js,ts,jsx,tsx}"
+    rule: "no_console_log"
+    exception_patterns:
+      - "**/*.test.*"
+      - "**/*.spec.*"
+      - "**/scripts/**"
+  
+  - name: "Consistent imports"
+    pattern: "**/*.{js,ts,jsx,tsx}"
+    rule: "import_order"
+    autofix: true
+
+# Post-merge actions
+post_merge:
+  - action: "update_dependencies"
+    condition: "package.json changed"
+    commands:
+      - "npm install"
+      - "npm audit fix"
+  
+  - action: "regenerate_types"
+    condition: "*.proto or *.graphql changed"
+    commands:
+      - "npm run generate:types"
+  
+  - action: "format_code"
+    condition: "always"
+    commands:
+      - "npm run prettier:write"
+      - "npm run lint:fix"
+
+# Conflict resolution report template
+report_template: |
+  ## Merge Conflict Resolution Summary
+  
+  **PR:** #{pr_number}
+  **Branches:** `{source_branch}` → `{target_branch}`
+  **Conflicts Resolved:** {conflict_count}
+  
+  ### Files Modified:
+  {file_list}
+  
+  ### Resolution Strategy:
+  {strategy_summary}
+  
+  ### Tests Status:
+  - Unit Tests: {unit_test_status}
+  - Integration Tests: {integration_test_status}
+  - Lint: {lint_status}
+  - Build: {build_status}
+  
+  ### Manual Review Needed:
+  {review_items}
+  
+  ### Additional Notes:
+  {notes}

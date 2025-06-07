@@ -1,0 +1,154 @@
+name: Auto-Resolve Merge Conflicts
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Pull Request number to check for conflicts'
+        required: false
+        type: string
+
+jobs:
+  check-conflicts:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Get PR details
+        id: pr_details
+        uses: actions/github-script@v7
+        with:
+          script: |
+            let pr_number = context.payload.pull_request?.number || '${{ inputs.pr_number }}';
+            
+            if (!pr_number && context.payload.ref) {
+              // Try to find PRs targeting this branch
+              const prs = await github.rest.pulls.list({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                base: context.payload.ref.replace('refs/heads/', ''),
+                state: 'open'
+              });
+              
+              if (prs.data.length > 0) {
+                pr_number = prs.data[0].number;
+              }
+            }
+            
+            if (pr_number) {
+              const pr = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: parseInt(pr_number)
+              });
+              
+              core.setOutput('has_pr', 'true');
+              core.setOutput('pr_number', pr_number);
+              core.setOutput('mergeable_state', pr.data.mergeable_state);
+              core.setOutput('head_ref', pr.data.head.ref);
+              core.setOutput('base_ref', pr.data.base.ref);
+              
+              return pr.data;
+            }
+            
+            core.setOutput('has_pr', 'false');
+      
+      - name: Check for merge conflicts
+        if: steps.pr_details.outputs.has_pr == 'true'
+        id: conflicts
+        run: |
+          echo "Checking PR #${{ steps.pr_details.outputs.pr_number }} for conflicts"
+          echo "Mergeable state: ${{ steps.pr_details.outputs.mergeable_state }}"
+          
+          if [[ "${{ steps.pr_details.outputs.mergeable_state }}" == "conflicting" ]]; then
+            echo "has_conflicts=true" >> $GITHUB_OUTPUT
+            echo "Merge conflicts detected!"
+          else
+            echo "has_conflicts=false" >> $GITHUB_OUTPUT
+            echo "No merge conflicts found"
+          fi
+      
+      - name: Create issue for Copilot
+        if: steps.conflicts.outputs.has_conflicts == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr_number = ${{ steps.pr_details.outputs.pr_number }};
+            const head_ref = '${{ steps.pr_details.outputs.head_ref }}';
+            const base_ref = '${{ steps.pr_details.outputs.base_ref }}';
+            
+            // Check if issue already exists
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'merge-conflict,copilot-task',
+              state: 'open'
+            });
+            
+            const existingIssue = issues.data.find(issue => 
+              issue.title.includes(`PR #${pr_number}`)
+            );
+            
+            if (!existingIssue) {
+              const issue = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `Resolve merge conflicts in PR #${pr_number}`,
+                body: `@copilot Please resolve the merge conflicts in PR #${pr_number}
+                
+                **Branch Details:**
+                - Source Branch: \`${head_ref}\`
+                - Target Branch: \`${base_ref}\`
+                - PR Link: #${pr_number}
+                
+                **Instructions:**
+                1. Analyze all conflicting files
+                2. Merge changes preserving functionality from both branches
+                3. Follow the project's coding standards
+                4. Ensure all tests pass after resolution
+                5. Update the PR with your changes
+                
+                **Priority Resolution Rules:**
+                - For \`package-lock.json\`: Regenerate after merging package.json
+                - For \`.gitignore\`: Combine entries from both branches
+                - For configuration files: Preserve settings from both branches
+                - For code files: Maintain functionality and fix any breaking changes
+                
+                **After Resolution:**
+                - Run \`npm test\` to verify tests pass
+                - Run \`npm run lint\` to check code style
+                - Comment on the PR with a summary of resolutions`,
+                assignees: ['copilot'],
+                labels: ['merge-conflict', 'copilot-task', `pr-${pr_number}`]
+              });
+              
+              // Comment on the PR
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr_number,
+                body: `🤖 **Merge conflicts detected!**
+                
+                I've created issue #${issue.data.number} and assigned it to GitHub Copilot to resolve the conflicts automatically.
+                
+                You can track the progress there, or manually trigger resolution by commenting:
+                \`@copilot resolve conflicts\`
+                
+                The conflicts will be resolved according to the project's merge strategy.`
+              });
+              
+              console.log(`Created issue #${issue.data.number} for conflict resolution`);
+            } else {
+              console.log(`Issue already exists: #${existingIssue.number}`);
+            }

@@ -1,0 +1,163 @@
+name: Copilot Comment Trigger
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  parse-comment:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+    
+    # Only run on PR comments that mention copilot
+    if: |
+      github.event.issue.pull_request && 
+      (contains(github.event.comment.body, '@copilot resolve conflicts') ||
+       contains(github.event.comment.body, '@copilot fix conflicts') ||
+       contains(github.event.comment.body, '@copilot merge conflicts'))
+    
+    steps:
+      - name: Acknowledge command
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Add reaction to acknowledge
+            await github.rest.reactions.createForIssueComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: context.payload.comment.id,
+              content: 'rocket'
+            });
+      
+      - name: Get PR details
+        id: pr_details
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            
+            core.setOutput('mergeable_state', pr.data.mergeable_state);
+            core.setOutput('head_ref', pr.data.head.ref);
+            core.setOutput('base_ref', pr.data.base.ref);
+            
+            return pr.data;
+      
+      - name: Create Copilot task
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr_number = context.issue.number;
+            const comment_author = context.payload.comment.user.login;
+            const mergeable_state = '${{ steps.pr_details.outputs.mergeable_state }}';
+            
+            if (mergeable_state !== 'conflicting') {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr_number,
+                body: `@${comment_author} No merge conflicts detected in this PR. Current mergeable state: \`${mergeable_state}\``
+              });
+              return;
+            }
+            
+            // Extract any specific instructions from the comment
+            const comment_body = context.payload.comment.body;
+            const instructions = comment_body
+              .split('\n')
+              .filter(line => !line.includes('@copilot'))
+              .join('\n')
+              .trim();
+            
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Resolve conflicts in PR #${pr_number} (requested by @${comment_author})`,
+              body: `@copilot Please resolve the merge conflicts in PR #${pr_number}
+              
+              **Requested by:** @${comment_author}
+              **PR Link:** #${pr_number}
+              
+              **Branch Details:**
+              - Source: \`${{ steps.pr_details.outputs.head_ref }}\`
+              - Target: \`${{ steps.pr_details.outputs.base_ref }}\`
+              
+              ${instructions ? `**Additional Instructions from ${comment_author}:**\n${instructions}` : ''}
+              
+              **Standard Resolution Process:**
+              1. Fetch and checkout the PR branch
+              2. Merge the target branch and resolve conflicts
+              3. Apply project-specific merge strategies
+              4. Run tests to ensure nothing is broken
+              5. Push the resolved changes
+              6. Comment on the PR with resolution details
+              
+              **Please prioritize:**
+              - Preserving all functionality
+              - Following existing code patterns
+              - Maintaining test coverage
+              - Clear documentation of any non-obvious resolutions`,
+              assignees: ['copilot'],
+              labels: ['merge-conflict', 'copilot-task', `pr-${pr_number}`, 'user-requested']
+            });
+            
+            // Reply to the original comment
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr_number,
+              body: `@${comment_author} I've created issue #${issue.data.number} for Copilot to resolve the merge conflicts in this PR.
+              
+              Copilot will:
+              - Analyze and resolve all conflicts
+              - Ensure tests pass
+              - Follow the project's coding standards
+              - Update this PR with the resolution
+              
+              You can track progress in the linked issue.`
+            });
+      
+      - name: Add help comment if needed
+        if: |
+          contains(github.event.comment.body, '@copilot help') ||
+          contains(github.event.comment.body, 'copilot ?')
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `## 🤖 Copilot Conflict Resolution Commands
+              
+              You can use these commands in PR comments:
+              
+              - \`@copilot resolve conflicts\` - Automatically resolve merge conflicts
+              - \`@copilot fix conflicts\` - Same as above
+              - \`@copilot merge conflicts\` - Same as above
+              
+              **Additional Options:**
+              You can add specific instructions after the command:
+              
+              \`\`\`
+              @copilot resolve conflicts
+              Please prioritize keeping the new feature from my branch
+              and make sure the API changes are compatible
+              \`\`\`
+              
+              **What happens:**
+              1. Copilot creates an issue to track the task
+              2. Analyzes the conflicts in your PR
+              3. Resolves them following project standards
+              4. Runs tests to verify the resolution
+              5. Updates your PR with the changes
+              6. Comments with a summary of what was done
+              
+              **Note:** This only works when there are actual merge conflicts in the PR.`
+            });
