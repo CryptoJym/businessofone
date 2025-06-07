@@ -1,0 +1,82 @@
+# Copilot Merge Strategies Configuration
+# This file defines how Copilot should handle merge conflicts for different file types
+
+strategies:
+  # Package management files
+  package.json:
+    strategy: merge-all-dependencies
+    description: Merge all dependencies from both branches, keeping higher versions
+    post_action: regenerate-lock-file
+  
+  package-lock.json:
+    strategy: regenerate
+    description: Delete and regenerate after other conflicts are resolved
+  
+  yarn.lock:
+    strategy: regenerate
+    description: Delete and regenerate after other conflicts are resolved
+  
+  # Configuration files
+  .gitignore:
+    strategy: merge-unique-lines
+    description: Keep all unique ignore patterns from both branches
+  
+  tsconfig.json:
+    strategy: merge-objects
+    description: Intelligently merge configuration objects
+    preserve_arrays: false
+  
+  next.config.js:
+    strategy: merge-exports
+    description: Merge configuration exports intelligently
+  
+  tailwind.config.js:
+    strategy: merge-deep
+    description: Deep merge configuration objects
+  
+  # Source code files
+  "*.tsx":
+    strategy: preserve-functionality
+    description: Keep all components and functions from both branches
+    conflict_resolution: 
+      - Preserve all imports
+      - Keep all component definitions
+      - Merge prop types
+      - Combine exports
+  
+  "*.ts":
+    strategy: preserve-functionality
+    description: Keep all functions and types from both branches
+  
+  # Documentation
+  "*.md":
+    strategy: combine-content
+    description: Intelligently combine documentation from both versions
+    conflict_resolution:
+      - Keep all sections
+      - Merge lists
+      - Preserve examples
+  
+  # Workflow files
+  ".github/workflows/*.yml":
+    strategy: careful-merge
+    description: Carefully merge workflow definitions
+    require_review: true
+
+# Global settings
+global:
+  auto_format: true
+  run_tests_after: true
+  create_merge_report: true
+  
+# File patterns to always accept from specific branches
+accept_patterns:
+  from_main:
+    - "*.lock"
+    - "dist/*"
+    - "build/*"
+  
+  from_feature:
+    - "src/**/*"
+    - "components/**/*"
+    - "pages/**/*"
