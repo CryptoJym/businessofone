@@ -41,6 +41,6 @@
     "eslint-plugin-testing-library": "^7.6.0",
     "jest": "^30.0.4",
     "jest-environment-jsdom": "^30.0.0-beta.3",
-    "jest-watch-typeahead": "^2.2.2"
+    "jest-watch-typeahead": "^3.0.1"
   }
 }
