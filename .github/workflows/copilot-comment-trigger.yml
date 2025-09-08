@@ -16,7 +16,7 @@ jobs:
       
       - name: Parse Copilot command
         id: parse
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const comment = context.payload.comment.body;
@@ -31,7 +31,7 @@ jobs:
       
       - name: Trigger conflict resolution
         if: steps.parse.outputs.command == 'resolve-conflicts'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             // Trigger the auto-resolve workflow
@@ -52,7 +52,7 @@ jobs:
       
       - name: Show help
         if: steps.parse.outputs.command == 'help'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             await github.rest.issues.createComment({

@@ -19,7 +19,7 @@ jobs:
           required_approval_count: 0
           
       - name: Update branches with Copilot suggestions
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GH_BOT_TOKEN }}
           script: |
