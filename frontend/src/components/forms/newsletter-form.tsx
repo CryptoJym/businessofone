@@ -48,6 +48,18 @@ export function NewsletterForm({
     },
   })
 
+  
+async function notifySlack(context: string, body: Record<string, any>) {
+  try {
+    const r1 = await fetch("https://utlyze.com/api/notify-lead", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ context, payload: body }) });
+    if (r1.ok) return true;
+  } catch {}
+  try {
+    const r2 = await fetch("https://utlyzecom.vercel.app/api/notify-lead", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ context, payload: body }) });
+    return r2.ok;
+  } catch { return false }
+}
+
   const onSubmit = async (data: NewsletterFormData) => {
     setIsSubmitting(true)
     
@@ -58,6 +70,20 @@ export function NewsletterForm({
         body: JSON.stringify(data),
       })
 
+
+      try {
+        const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '')
+        const payload = {
+          email: data.email,
+          firstName: data.firstName || null,
+          businessStage: data.businessStage || null,
+          page_url: typeof window !== 'undefined' ? window.location.href : '',
+          utm_source: params.get('utm_source'),
+          utm_medium: params.get('utm_medium'),
+          utm_campaign: params.get('utm_campaign'),
+        }
+        notifySlack('newsletter', payload)
+      } catch {}
       if (response.ok) {
         setIsSuccess(true)
         form.reset()

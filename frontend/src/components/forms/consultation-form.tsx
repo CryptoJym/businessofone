@@ -48,6 +48,18 @@ export function ConsultationForm() {
     },
   })
 
+  
+  async function notifySlack(context: string, body: Record<string, any>) {
+    try {
+      const r1 = await fetch("https://utlyze.com/api/notify-lead", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ context, payload: body }) });
+      if (r1.ok) return true;
+    } catch {}
+    try {
+      const r2 = await fetch("https://utlyzecom.vercel.app/api/notify-lead", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ context, payload: body }) });
+      return r2.ok;
+    } catch { return false }
+  }
+
   const onSubmit = async (data: ConsultationFormData) => {
     setIsSubmitting(true)
     
@@ -59,12 +71,51 @@ export function ConsultationForm() {
         body: JSON.stringify(data),
       })
 
+
+      // best-effort Slack notify (non-blocking)
+      try {
+        const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '')
+        const payload = {
+          name: data.name,
+          email: data.email,
+          phone: data.phone || null,
+          businessType: data.businessType,
+          revenueRange: data.revenueRange,
+          biggestChallenge: data.biggestChallenge,
+          preferredContactTime: data.preferredContactTime,
+          page_url: typeof window !== 'undefined' ? window.location.href : '',
+          utm_source: params.get('utm_source'),
+          utm_medium: params.get('utm_medium'),
+          utm_campaign: params.get('utm_campaign'),
+        }
+        notifySlack('consultation', payload)
+      } catch {}
       if (response.ok) {
         setIsSuccess(true)
         form.reset()
       }
     } catch (error) {
       console.error("Error submitting form:", error)
+
+      try {
+        const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '')
+        const payload = {
+          name: data.name,
+          email: data.email,
+          phone: data.phone || null,
+          businessType: data.businessType,
+          revenueRange: data.revenueRange,
+          biggestChallenge: data.biggestChallenge,
+          preferredContactTime: data.preferredContactTime,
+          page_url: typeof window !== 'undefined' ? window.location.href : '',
+          utm_source: params.get('utm_source'),
+          utm_medium: params.get('utm_medium'),
+          utm_campaign: params.get('utm_campaign'),
+          error: String(error)
+        }
+        notifySlack('consultation-error', payload)
+      } catch {}
+
     } finally {
       setIsSubmitting(false)
     }
