@@ -3,9 +3,11 @@
 import Link from 'next/link'
 import { Menu, X } from 'lucide-react'
 import { useState } from 'react'
+import { usePathname } from 'next/navigation'
 
 export function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const pathname = usePathname()
 
   const navItems = [
     { href: '/', label: 'Home' },
@@ -28,7 +30,11 @@ export function Navigation() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-gray-700 hover:text-primary transition-colors"
+                className={`transition-colors ${
+                  pathname === item.href
+                    ? 'text-primary font-semibold'
+                    : 'text-gray-700 hover:text-primary'
+                }`}
               >
                 {item.label}
               </Link>
@@ -42,6 +48,9 @@ export function Navigation() {
           <button
             className="md:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-menu"
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -49,12 +58,16 @@ export function Navigation() {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden pb-4">
+          <div id="mobile-menu" className="md:hidden pb-4">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="block py-2 text-gray-700 hover:text-primary transition-colors"
+                className={`block py-2 transition-colors ${
+                  pathname === item.href
+                    ? 'text-primary font-semibold'
+                    : 'text-gray-700 hover:text-primary'
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 {item.label}

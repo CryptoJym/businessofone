@@ -119,33 +119,3 @@ export const CardFooter: React.FC<{
 };
 
 export default Card;
-
-<style jsx>{`
-  .bg-white {
-    background-color: ${designTokens.colors.background.primary};
-  }
-  .bg-gray-50 {
-    background-color: ${designTokens.colors.gray[50]};
-  }
-  .bg-gray-100:hover {
-    background-color: ${designTokens.colors.gray[100]};
-  }
-  .border-gray-100 {
-    border-color: ${designTokens.colors.gray[100]};
-  }
-  .border-gray-200 {
-    border-color: ${designTokens.colors.gray[200]};
-  }
-  .border-gray-300 {
-    border-color: ${designTokens.colors.gray[300]};
-  }
-  .border-primary-500:hover {
-    border-color: ${designTokens.colors.primary[500]};
-  }
-  .text-gray-900 {
-    color: ${designTokens.colors.gray[900]};
-  }
-  .text-gray-600 {
-    color: ${designTokens.colors.gray[600]};
-  }
-`}</style>

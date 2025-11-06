@@ -33,7 +33,7 @@ const caseStudies: CaseStudy[] = [
       { metric: 'Client Capacity', value: '2x', improvement: 'without hiring' }
     ],
     testimonial: 'Business of One helped me see my business as a system, not just a job.',
-    thumbnail: '/images/case-studies/sarah-chen.jpg',
+    thumbnail: '',
     featured: true
   },
   {
@@ -48,7 +48,7 @@ const caseStudies: CaseStudy[] = [
       { metric: 'Profit Margin', value: '68%', improvement: 'from 35%' }
     ],
     testimonial: 'I finally have a business that works for me, not the other way around.',
-    thumbnail: '/images/case-studies/michael-rodriguez.jpg',
+    thumbnail: '',
     featured: true
   },
   {
@@ -63,7 +63,7 @@ const caseStudies: CaseStudy[] = [
       { metric: 'Waitlist', value: '45+', improvement: 'qualified leads' }
     ],
     testimonial: 'The strategies transformed not just my business, but my clients\' results too.',
-    thumbnail: '/images/case-studies/lisa-thompson.jpg',
+    thumbnail: '',
     featured: false
   }
 ];
@@ -160,12 +160,19 @@ export default function CaseStudiesPage() {
       {/* Filter Section */}
       <section className="px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-wrap gap-2 justify-center mb-8">
+          <div className="flex flex-wrap gap-2 justify-center mb-8" role="group" aria-label="Filter case studies by industry">
             {industries.map((industry) => (
               <button
                 key={industry}
                 onClick={() => setFilter(industry)}
-                className={`px-6 py-2 rounded-full font-medium transition-all ${
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    setFilter(industry)
+                  }
+                }}
+                aria-pressed={filter === industry}
+                className={`px-6 py-2 rounded-full font-medium transition-all focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
                   filter === industry
                     ? 'bg-[#4169E1] text-white'
                     : 'bg-white text-gray-700 hover:bg-gray-100'
