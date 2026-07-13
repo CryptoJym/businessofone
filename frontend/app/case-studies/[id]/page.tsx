@@ -1,8 +1,5 @@
-'use client';
-
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 
 interface CaseStudyDetail {
   id: string;
@@ -176,8 +173,13 @@ const caseStudiesData: Record<string, CaseStudyDetail> = {
   }
 };
 
-export default function CaseStudyPage({ params }: { params: { id: string } }) {
-  const study = caseStudiesData[params.id];
+export default async function CaseStudyPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const study = caseStudiesData[id];
   
   if (!study) {
     notFound();
