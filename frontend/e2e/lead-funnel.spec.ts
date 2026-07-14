@@ -10,10 +10,10 @@ test("homepage preserves the conversion hierarchy without horizontal overflow", 
   await page.goto("/")
 
   await expect(
-    page.getByRole("heading", { name: "Build a business that runs bigger than it is." }),
+    page.getByRole("heading", { name: "Run one business with the leverage of a whole team." }),
   ).toBeVisible()
   await expect(
-    page.getByRole("heading", { name: "Where is the business getting stuck?" }),
+    page.getByRole("heading", { name: "Where could leverage change the business fastest?" }),
   ).toBeVisible()
 
   const overflow = await page.evaluate(
@@ -43,11 +43,11 @@ test("funnel advances, submits through the local gateway, and confirms only on a
   await page.goto("/")
 
   const heroFunnel = page.locator("#lead-funnel")
-  await heroFunnel.getByRole("radio", { name: "Admin and follow-up" }).click()
+  await heroFunnel.getByRole("radio", { name: "Sales follow-up and admin" }).click()
   await heroFunnel.getByRole("button", { name: "Continue" }).click()
 
   await expect(
-    heroFunnel.getByRole("heading", { name: "Where should we send your plan?" }),
+    heroFunnel.getByRole("heading", { name: "Where should Utlyze follow up?" }),
   ).toBeVisible()
   await heroFunnel.getByLabel("Name", { exact: true }).fill("Ada Owner")
   await heroFunnel.getByLabel("Work email").fill("ada@example.com")
@@ -55,13 +55,13 @@ test("funnel advances, submits through the local gateway, and confirms only on a
   await heroFunnel
     .getByLabel("What would make the next 90 days a win?")
     .fill("Recover ten hours each week and follow up on every lead.")
-  await heroFunnel.getByRole("button", { name: "Request my working session" }).click()
+  await heroFunnel.getByRole("button", { name: "Create my starter brief" }).click()
 
   await expect(
-    page.getByRole("heading", { name: "Your details are with Utlyze." }).first(),
+    page.getByRole("heading", { name: "Your request is with Utlyze." }).first(),
   ).toBeVisible()
   await expect(
-    page.getByRole("link", { name: "Choose a time with Utlyze" }).first(),
+    page.getByRole("link", { name: "Continue with Utlyze" }).first(),
   ).toHaveAttribute("href", "https://www.utlyze.com/booking")
 })
 
@@ -81,18 +81,20 @@ test("provider rejection stays an error instead of becoming a false success", as
   await page.goto("/#closing-funnel")
 
   const closingFunnel = page.locator("#closing-funnel")
+  await closingFunnel.getByRole("radio", { name: "Strategy and operating rhythm" }).click()
+  await closingFunnel.getByRole("button", { name: "Continue" }).click()
   await closingFunnel.getByLabel("Name", { exact: true }).fill("Ada Owner")
   await closingFunnel.getByLabel("Work email").fill("ada@example.com")
   await closingFunnel.getByLabel("Business name").fill("Ada Studio")
   await closingFunnel
     .getByLabel("What would make the next 90 days a win?")
     .fill("Recover ten hours each week and follow up on every lead.")
-  await closingFunnel.getByRole("button", { name: "Request my working session" }).click()
+  await closingFunnel.getByRole("button", { name: "Create my starter brief" }).click()
 
   await expect(closingFunnel.getByRole("alert")).toContainText(
     "We could not route your request",
   )
   await expect(
-    page.getByRole("heading", { name: "Your details are with Utlyze." }),
+    page.getByRole("heading", { name: "Your request is with Utlyze." }),
   ).toHaveCount(0)
 })
