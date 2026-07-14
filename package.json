@@ -1,7 +1,11 @@
 {
   "name": "businessofone",
   "version": "1.0.0",
+  "private": true,
   "description": "Solo business consulting and optimization",
+  "workspaces": [
+    "frontend"
+  ],
   "scripts": {
     "orchestrate": "node scripts/agent-orchestrator.js",
     "background": "echo \"Background agent started with prompt:\" && echo $CURSOR_BACKGROUND_AGENT_PROMPT",
@@ -26,6 +30,14 @@
   ],
   "author": "Utlyze",
   "license": "MIT",
+  "dependencies": {
+    "next": "15.5.20",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "overrides": {
+    "postcss": "8.5.19"
+  },
   "devDependencies": {
     "@babel/core": "^7.29.7",
     "@babel/preset-env": "^7.29.5",
