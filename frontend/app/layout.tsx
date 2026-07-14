@@ -1,41 +1,44 @@
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import './globals.css'
-
-const inter = Inter({ subsets: ['latin'] })
+import type { Metadata, Viewport } from "next"
+import "./globals.css"
 
 export const metadata: Metadata = {
-  title: 'Business of One - Transform Your Solo Business Without Hiring',
-  description: 'One-stop consulting and tools to run your business like a world-class company. Get strategies, systems, and support to scale your solo business efficiently.',
-  keywords: 'solo business, business consulting, business automation, one-person business, business growth, business strategy',
-  authors: [{ name: 'Utlyze' }],
+  metadataBase: new URL("https://businessofone.ai"),
+  title: "Business of One | The AI operating system for solo owners",
+  description:
+    "Use supervised AI across growth, sales, delivery, finance, and operations while you keep judgment, control, and a clear 90-day plan.",
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
-    title: 'Business of One - Transform Your Solo Business Without Hiring',
-    description: 'One-stop consulting and tools to run your business like a world-class company.',
-    url: 'https://businessofone.ai',
-    siteName: 'Business of One',
-    images: [
-      {
-        url: '/og-image.png',
-        width: 1200,
-        height: 630,
-      },
-    ],
-    locale: 'en_US',
-    type: 'website',
+    title: "Business of One",
+    description:
+      "A supervised AI operating system for solo owners who want more leverage without more payroll.",
+    url: "/",
+    siteName: "Business of One",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Business of One",
+    description:
+      "The one-person AI operating system for growth, sales, delivery, and operations.",
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 }
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#061426",
+}
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-white text-gray-900 antialiased`}>
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   )
 }
